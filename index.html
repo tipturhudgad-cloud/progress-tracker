@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Parent Login - College Database System</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background: #f5f5f5;
+    }
+    h1, h2 { color: #333; }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      margin-bottom: 20px;
+    }
+    label { display: block; margin-top: 10px; font-weight: bold; }
+    input {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      margin-top: 15px;
+      padding: 10px 15px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover { background: #0056b3; }
+    .info-box {
+      background: #e9f5e9;
+      padding: 10px;
+      margin-top: 15px;
+      border-radius: 5px;
+      border: 1px solid #cce5cc;
+    }
+    .error {
+      background: #f8d7da;
+      color: #721c24;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 5px;
+      border: 1px solid #f5c6cb;
+    }
+    nav a {
+      margin-right: 15px;
+      text-decoration: none;
+      color: #007bff;
+    }
+    nav a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <h1>College Database System</h1>
+  <nav>
+    <a href="add_student.html">Add Student</a>
+    <a href="add_parent.html">Add Parent</a>
+    <a href="parent_login.html">Parent Login</a>
+  </nav>
+
+  <div class="container">
+    <h2>Parent Login</h2>
+    <label>Parent ID</label>
+    <!-- Use text instead of number for Android compatibility -->
+    <input type="text" id="login_parent_id" inputmode="numeric" pattern="[0-9]*" />
+    <button onclick="parentLogin()">Login</button>
+    <div id="login_msg"></div>
+  </div>
+
+  <script>
+    function safeParse(key) {
+      try {
+        return JSON.parse(localStorage.getItem(key)) || [];
+      } catch {
+        return [];
+      }
+    }
+
+    let parents = safeParse("parents");
+    let students = safeParse("students");
+
+    function parentLogin() {
+      let id = document.getElementById("login_parent_id").value.trim();
+      let msg = document.getElementById("login_msg");
+
+      if (!id) {
+        msg.innerHTML = `<div class='error'>Please enter Parent ID.</div>`;
+        return;
+      }
+
+      let parent = parents.find(p => String(p.id) === id);
+      if (!parent) {
+        msg.innerHTML = `<div class='error'>Invalid Parent ID.</div>`;
+        return;
+      }
+
+      let student = students.find(s => String(s.id) === String(parent.student_id));
+      if (!student) {
+        msg.innerHTML = `<div class='error'>No student linked to this parent.</div>`;
+        return;
+      }
+
+      msg.innerHTML = `
+        <div class='info-box'>
+          <b>Parent:</b> ${parent.name} (ID: ${parent.id})<br>
+          <b>Student Name:</b> ${student.name}<br>
+          <b>Grade:</b> ${student.grade}<br>
+          <b>Attendance:</b> ${student.attendance}%
+        </div>
+      `;
+    }
+  </script>
+</body>
+</html>
